@@ -1,0 +1,17 @@
+import { Router } from 'express';
+import { register,login } from '../controllers/authController.js';
+import * as c from '../controllers/coreController.js';
+import { requireAuth } from '../middleware/authMiddleware.js';
+const r=Router();
+r.get('/health',(req,res)=>res.json({status:'ok',app:'Unfazed'}));
+r.post('/auth/register',register); r.post('/auth/login',login);
+r.get('/therapists/:slug',c.publicProfile); r.get('/clients/:clientId/shared-notes',c.sharedNotes);
+r.get('/tiers',c.tiers);
+r.patch('/therapist/tier', requireAuth, c.selectTier);
+r.patch('/therapist/profile',requireAuth,c.updateProfile);
+r.get('/clients',requireAuth,c.listClients); r.post('/clients',requireAuth,c.createClient);
+r.get('/availability',requireAuth,c.listAvailability); r.post('/availability',requireAuth,c.createAvailability); r.post('/availability/:id/book',requireAuth,c.bookSlot);
+r.get('/notes',requireAuth,c.listNotes); r.post('/notes',requireAuth,c.createNote);
+r.post('/payments/order',requireAuth,c.createOrder); r.post('/payments/confirm',requireAuth,c.confirmPayment);
+r.get('/analytics',requireAuth,c.analytics);
+export default r;

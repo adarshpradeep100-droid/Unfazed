@@ -1,0 +1,14 @@
+import mongoose from 'mongoose';
+const { Schema, model } = mongoose;
+const therapistSchema = new Schema({ name: {type:String,required:true}, email:{type:String,required:true,unique:true}, passwordHash:{type:String,required:true}, slug:{type:String,unique:true}, bio:String, specializations:[String], languages:[String], tier:{type:String,default:'free'} }, {timestamps:true});
+const clientSchema = new Schema({ therapistId:{type:Schema.Types.ObjectId,ref:'Therapist',required:true}, name:{type:String,required:true}, email:String, status:{type:String,default:'active'}, tags:[String], presentingConcern:String, consentAt:Date }, {timestamps:true});
+const availabilitySchema = new Schema({ therapistId:{type:Schema.Types.ObjectId,ref:'Therapist',required:true}, startAt:{type:Date,required:true}, endAt:{type:Date,required:true}, booked:{type:Boolean,default:false}, clientId:{type:Schema.Types.ObjectId,ref:'Client'} }, {timestamps:true});
+const paymentSchema = new Schema({ therapistId:{type:Schema.Types.ObjectId,ref:'Therapist'}, clientId:{type:Schema.Types.ObjectId,ref:'Client'}, orderId:String, gatewayTransactionId:String, amount:{type:Number,required:true}, currency:{type:String,default:'INR'}, status:{type:String,default:'created'} }, {timestamps:true});
+const noteSchema = new Schema({ therapistId:{type:Schema.Types.ObjectId,ref:'Therapist',required:true}, clientId:{type:Schema.Types.ObjectId,ref:'Client',required:true}, sessionAt:Date, type:{type:String,enum:['private','shared'],default:'private'}, content:{type:String,required:true} }, {timestamps:true});
+const tierSchema = new Schema({ name:{type:String,unique:true}, caps:{activeClients:Number}, features:{analytics:Boolean,templates:Boolean} });
+export const Therapist = mongoose.models.Therapist || model('Therapist', therapistSchema);
+export const Client = mongoose.models.Client || model('Client', clientSchema);
+export const Availability = mongoose.models.Availability || model('Availability', availabilitySchema);
+export const Payment = mongoose.models.Payment || model('Payment', paymentSchema);
+export const SessionNote = mongoose.models.SessionNote || model('SessionNote', noteSchema);
+export const SubscriptionTierConfig = mongoose.models.SubscriptionTierConfig || model('SubscriptionTierConfig', tierSchema);
